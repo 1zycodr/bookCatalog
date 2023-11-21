@@ -19,18 +19,23 @@ from django.urls import path, include, re_path
 from django.views.generic import RedirectView
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
+from rest_framework.permissions import AllowAny
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
 schema_view = get_schema_view(
-   openapi.Info(
-      title='Book catalog API',
-      default_version='v1'
-   ),
-   public=True,
+    openapi.Info(
+        title='Book catalog API',
+        default_version='v1',
+    ),
+    public=True,
+    permission_classes=[AllowAny],
+    authentication_classes=[JWTAuthentication],
 )
 
 urlpatterns = [
     path('', RedirectView.as_view(url='/swagger')),
     path('admin/', admin.site.urls),
+    path('api/v1/', include('authentication.urls')),
     path('api/v1/', include('core.urls')),
     re_path(r'^swagger(?P<format>\.json|\.yaml)$',
            schema_view.without_ui(cache_timeout=0),  # noqa
